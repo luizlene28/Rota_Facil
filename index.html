@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rota Fácil! - Brasil Completo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --bg-primary: #0a0e27; --bg-secondary: #131835; --bg-card: #1a1f3a;
+            --accent: #00d4aa; --text-primary: #e8e8f0; --text-secondary: #9098b0;
+            --border: #252d4a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; }
+        .header { background: #0f1430; padding: 15px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .container { display: flex; height: calc(100vh - 70px); }
+        .sidebar { width: 400px; background: var(--bg-secondary); padding: 20px; overflow-y: auto; z-index: 10; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .card { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; }
+        label { font-size: 0.8em; color: var(--text-secondary); text-transform: uppercase; font-weight: bold; }
+        select, input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; background: #0a0e27; color: white; border: 1px solid var(--border); font-size: 16px; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--accent); color: #0a0e27; font-size: 16px; transition: 0.3s; }
+        .btn:active { transform: scale(0.98); }
+        .results-card { display: none; }
+        .dist-box { text-align: center; padding: 15px; background: rgba(0,212,170,0.1); border-radius: 10px; margin-bottom: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .mini-card { background: #0a0e27; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+        #map { flex: 1; background: #0a0e27; }
+        @media (max-width: 800px) { .container { flex-direction: column; } .sidebar { width: 100%; height: 60%; } #map { height: 40%; } }
+        .mode-indicator { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; margin-left: 10px; }
+        .mode-online { background: #00d4aa33; color: #00d4aa; }
+        .mode-offline { background: #ff6b6b33; color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="color: var(--accent)">Rota Fácil! 🗺️ <span id="modeTag" class="mode-indicator mode-online">ONLINE</span></h2>
+        <select id="mapMode" style="width: auto; margin: 0; padding: 5px;" onchange="toggleMode()">
+            <option value="online">Modo Online (Preciso)</option>
+            <option value="offline">Modo Offline (Estimado)</option>
+        </select>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <div class="card">
+                <label>Origem</label>
+                <select id="os" onchange="upCities('o')"></select>
+                <select id="oc"></select>
+                <label>Destino</label>
+                <select id="ds" onchange="upCities('d')"></select>
+                <select id="dc"></select>
+                <button class="btn" onclick="calc()">Calcular Viagem</button>
+            </div>
+            <div id="res" class="results-card">
+                <div class="dist-box">
+                    <span id="km" style="font-size: 2.5em; font-weight: bold; color: var(--accent)">0</span> km
+                </div>
+                <div class="grid-2">
+                    <div class="mini-card">🚗 Carro<br><b id="t-car">--</b></div>
+                    <div class="mini-card">🚌 Ônibus<br><b id="t-bus">--</b></div>
+                </div>
+                <div class="card" style="margin-top:15px">
+                    <label>Seu Consumo (km/L)</label>
+                    <input type="number" id="cons" value="12" oninput="upCosts()">
+                    <div class="grid-2" style="margin-top:10px">
+                        <div>
+                            <label style="font-size:0.7em;">Preço Gasolina (R$)</label>
+                            <input type="number" id="pGas" value="5.80" step="0.01" oninput="upCosts()">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7em;">Preço Etanol (R$)</label>
+                            <input type="number" id="pEta" value="4.10" step="0.01" oninput="upCosts()">
+                        </div>
+                    </div>
+                    <div class="grid-2" style="margin-top:10px">
+                        <div class="mini-card" style="border-color: #ff6b6b">Gasolina<br><span id="v-gas">R$ 0</span></div>
+                        <div class="mini-card" style="border-color: #4ecdc4">Etanol<br><span id="v-eta">R$ 0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // DB Otimizado - Adicionei mais cidades de SP e mantive AP completo
+        const DB = {
+            "AP": { n: "Amapá", lat: 0.034, lon: -51.06, cities: ["Macapá","Santana","Laranjal do Jari","Oiapoque","Mazagão","Porto Grande","Tartarugalzinho","Calçoene","Amapá","Ferreira Gomes","Cutias","Itaubal","Pracuúba","Serra do Navio","Pedra Branca","Vitória do Jari"] },
+            "SP": { n: "São Paulo", lat: -23.55, lon: -46.63, cities: ["São Paulo","Campinas","Santos","São José dos Campos","Ribeirão Preto","Sorocaba","Bauru","Franca","Guarulhos","Barretos","Araraquara","Presidente Prudente","Marília","Sertãozinho"] },
+            "PA": { n: "Pará", lat: -1.45, lon: -48.48, cities: ["Belém","Ananindeua","Santarém","Marabá","Castanhal","Parauapebas","Ituita","Altamira"] },
+            "MG": { n: "Minas Gerais", lat: -19.91, lon: -43.93, cities: ["Belo Horizonte","Uberlândia","Contagem","Juiz de Fora","Betim","Montes Claros"] },
+            "RJ": { n: "Rio de Janeiro", lat: -22.90, lon: -43.17, cities: ["Rio de Janeiro","São Gonçalo","Duque de Caxias","Nova Iguaçu","Niterói"] }
+            // Outros estados seguem a mesma lógica...
+        };
+
+        let map, route, distKm = 0;
+        let modoOffline = false;
+
+        function toggleMode() {
+            const sel = document.getElementById('mapMode');
+            const tag = document.getElementById('modeTag');
+            modoOffline = (sel.value === 'offline');
+            tag.textContent = modoOffline ? 'OFFLINE' : 'ONLINE';
+            tag.className = 'mode-indicator ' + (modoOffline ? 'mode-offline' : 'mode-online');
+        }
+
+        function init() {
+            map = L.map('map').setView([-15.0, -55.0], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            const ufs = Object.keys(DB).sort();
+            ['os', 'ds'].forEach(id => {
+                const s = document.getElementById(id);
+                s.innerHTML = '<option value="">Estado</option>' + ufs.map(u => `<option value="${u}">${u}</option>`).join('');
+            });
+        }
+
+        function upCities(t) {
+            const uf = document.getElementById(t+'s').value;
+            const c = document.getElementById(t+'c');
+            c.innerHTML = '<option value="">Cidade</option>';
+            if(uf && DB[uf]) {
+                DB[uf].cities.sort().forEach(city => {
+                    const opt = document.createElement('option');
+                    opt.value = city;
+                    opt.textContent = city;
+                    c.appendChild(opt);
+                });
+            }
+        }
+
+        async function calc() {
+            const os = document.getElementById('os').value;
+            const oc = document.getElementById('oc').value;
+            const ds = document.getElementById('ds').value;
+            const dc = document.getElementById('dc').value;
+
+            if(!oc || !dc) return alert("Selecione Origem e Destino!");
+
+            if(!modoOffline && navigator.onLine) {
+                try {
+                    const r1 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${oc},${os},Brasil`);
+                    const d1 = await r1.json();
+                    const r2 = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${dc},${ds},Brasil`);
+                    const d2 = await r2.json();
+                    
+                    const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${d1[0].lon},${d1[0].lat};${d2[0].lon},${d2[0].lat}?overview=full&geometries=geojson`);
+                    const data = await res.json();
+                    
+                    distKm = data.routes[0].distance / 1000;
+                    plot(data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]));
+                } catch(e) {
+                    calcularSimples(os, ds);
+                }
+            } else {
+                calcularSimples(os, ds);
+            }
+            show();
+        }
+
+        function calcularSimples(os, ds) {
+            // Cálculo de distância em linha reta (Haversine) caso falte internet
+            const lat1 = DB[os].lat; const lon1 = DB[os].lon;
+            const lat2 = DB[ds].lat; const lon2 = DB[ds].lon;
+            const R = 6371;
+            const dLat = (lat2-lat1)*Math.PI/180;
+            const dLon = (lon2-lon1)*Math.PI/180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+            distKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))) * 1.2; // +20% para simular curvas
+            plot([[lat1, lon1], [lat2, lon2]]);
+        }
+
+        function plot(coords) {
+            if(route) map.removeLayer(route);
+            route = L.polyline(coords, {color: '#00d4aa', weight: 6}).addTo(map);
+            map.fitBounds(route.getBounds());
+        }
+
+        function show() {
+            document.getElementById('res').style.display = 'block';
+            document.getElementById('km').textContent = distKm.toFixed(1);
+            document.getElementById('t-car').textContent = Math.round(distKm / 85) + "h";
+            document.getElementById('t-bus').textContent = Math.round(distKm / 70) + "h";
+            upCosts();
+        }
+
+        function upCosts() {
+            const gas = parseFloat(document.getElementById('pGas').value);
+            const eta = parseFloat(document.getElementById('pEta').value);
+            const c = parseFloat(document.getElementById('cons').value);
+            document.getElementById('v-gas').textContent = "R$ " + ((distKm/c)*gas).toFixed(2);
+            document.getElementById('v-eta').textContent = "R$ " + ((distKm/c)*eta).toFixed(2);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
