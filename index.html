@@ -82,12 +82,56 @@
         <div id="map"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // DB Otimizado - Adicionei mais cidades de SP e mantive AP completo
+        // DB Super Expandido - Amapá e Pará (Região de Belém Ampliada)
         const DB = {
-    "AP": { n: "Amapá", lat: 0.034, lon: -51.06, cities: ["Amapá","Calçoene","Cutias","Ferreira Gomes","Itaubal","Laranjal do Jari","Macapá","Mazagão","Oiapoque","Pedra Branca do Amapari","Porto Grande","Pracuúba","Santana","Serra do Navio","Tartarugalzinho","Vitória do Jari","Abacate da Pedreira","Anauerapucu","Aporema","Ariri","Bailique","Boca do Jari","Cabralzinho","Cachaço","Campina de São Pedro","Camaipi","Carnot","Carvão","Cassiporé","Chaves","Chefe Clodoaldo","Colônia do Matapi","Comunidade do Igarapé Grande","Cunani","Curiaú","Fazendinha","Igarapé do Lago","Ilha de Santana","Inajá","Industrial","Itaubal do Piririm","Lourenço","Luzia","Macacoari","Maruanum","Matapi","Mazagão Velho","Munguba","Mutum","Nazaré","Outeiro do Lourenço","Pacuí","Paredão","Piaçacá","Piaçaba","Pirativa","Porto Céu","Região do Mel","Ribeirão","Santa Luzia do Pacuí","Santo Antônio da Pedreira","São Joaquim do Pacuí","São Tomé","Sertãozinho","Sucuriju","Turiaca","Vila Amazonas","Vila Velha do Cassiporé","Vila Progresso","Vila Nova","Vila dos Evangélicos","Vila do Trem","Vila Fátima","Vila Gorete","Vila Reis"] },
-    "PA": { n: "Pará", lat: -1.45, lon: -48.48, cities: ["Abaetetuba","Abel Figueiredo","Acará","Afuá","Água Azul do Norte","Alenquer","Almeirim","Altamira","Anajás","Ananindeua","Anapu","Augusto Corrêa","Aurora do Pará","Aveiro","Bagre","Baião","Bannach","Barcarena","Belém","Belterra","Benevides","Bom Jesus do Tocantins","Bonito","Bragança","Brasil Novo","Brejo Grande do Araguaia","Breu Branco","Breves","Bujaru","Cachoeira do Arari","Cachoeira do Piriá","Cametá","Canaã dos Carajás","Capanema","Capitão Poço","Castanhal","Chaves","Colares","Conceição do Araguaia","Concórdia do Pará","Cumaru do Norte","Curionópolis","Curralinho","Curuá","Curuça","Dom Eliseu","Eldorado do Carajás","Faro","Floresta do Araguaia","Garrafão do Norte","Goianésia do Pará","Gurupá","Igarapé-Açu","Igarapé-Miri","Inhangapi","Ipixuna do Pará","Irituia","Itaituba","Itupiranga","Jacareacanga","Jacundá","Juruti","Limoeiro do Ajuru","Mãe do Rio","Magalhães Barata","Marabá","Maracanã","Marapanim","Marituba","Medicilândia","Melgaço","Mocajuba","Moju","Mojuí dos Campos","Monte Alegre","Muaná","Nova Esperança do Piriá","Novo Progresso","Novo Repartimento","Óbidos","Oriximiná","Ourilândia do Norte","Pacajá","Paragominas","Parauapebas","Pau D'Arco","Placas","Ponta de Pedras","Portel","Porto de Moz","Prainha","Primavera","Redenção","Rio Maria","Rondon do Pará","Rurópolis","Salinópolis","Salvaterra","Santa Bárbara do Pará","Santa Cruz do Arari","Santa Izabel do Pará","Santa Maria das Barreiras","Santa Maria do Pará","Santana do Araguaia","Santarém","Santarém Novo","Santo Antônio do Tauá","São Caetano de Odivelas","São Domingos do Araguaia","São Domingos do Capim","São Félix do Xingu","São Francisco do Pará","São Geraldo do Araguaia","São João da Ponta","São João de Pirabas","São João do Araguaia","São Miguel do Guamá","São Sebastião da Boa Vista","Sapucaia","Senador José Porfírio","Soure","Tailândia","Terra Alta","Terra Santa","Tomé-Açu","Tracuateua","Trairão","Tucumã","Tucuruí","Ulianópolis","Uruará","Vigia","Viseu","Vitória do Xingu","Xinguara","Alter do Chão","Algodoal","Almoço","Americano","Araras","Apeú","Assentamento Palmares","Boca do Acre","Cairari","Carajás","Castelo dos Sonhos","Colares","Curuai","Icoaraci","Igarapé-Açu","Ilha de Mosqueiro","Joana Peres","Miritituba","Monte Dourado","Murucupi","Outeiro","Paragominas Novo","Porto Trombetas","Quatro Bocas","Região do Salto","São Francisco do Mainardi","Taboleiro","Vila do Conde","Vila dos Cabanos","Vila do Trinta","Vila Mandi","Vila Permanente","Vila Socorro"] }
+    "AP": { 
+        n: "Amapá", 
+        lat: 0.034, 
+        lon: -51.06, 
+        cities: [
+            "Amapá","Calçoene","Cutias","Ferreira Gomes","Itaubal","Laranjal do Jari","Macapá","Mazagão","Oiapoque","Pedra Branca do Amapari","Porto Grande","Pracuúba","Santana","Serra do Navio","Tartarugalzinho","Vitória do Jari","Abacate da Pedreira","Anauerapucu","Aporema","Ariri","Bailique","Boca do Jari","Cabralzinho","Cachaço","Campina de São Pedro","Camaipi","Carnot","Carvão","Cassiporé","Chaves","Chefe Clodoaldo","Colônia do Matapi","Comunidade do Igarapé Grande","Cunani","Curiaú","Fazendinha","Igarapé do Lago","Ilha de Santana","Inajá","Industrial","Itaubal do Piririm","Lourenço","Luzia","Macacoari","Maruanum","Matapi","Mazagão Velho","Munguba","Mutum","Nazaré","Outeiro do Lourenço","Pacuí","Paredão","Piaçacá","Piaçaba","Pirativa","Porto Céu","Região do Mel","Ribeirão","Santa Luzia do Pacuí","Santo Antônio da Pedreira","São Joaquim do Pacuí","São Tomé","Sertãozinho","Sucuriju","Turiaca","Vila Amazonas","Vila Velha do Cassiporé","Vila Progresso","Vila Nova","Vila dos Evangélicos","Vila do Trem","Vila Fátima","Vila Gorete","Vila Reis",
+            "Paredão (Ferreira Gomes)", "Vila do Amapari (Ferreira Gomes)", "Assentamento Matapi (Ferreira Gomes)", "Igarapé do Limão (Ferreira Gomes)", "Vila Triunfo (Ferreira Gomes)", "Corredor do Pedreirinho (Ferreira Gomes)", "Porto do Meio (Ferreira Gomes)", "Fazenda Pacuí (Ferreira Gomes)",
+            "Vila Novo Horizonte (Tartarugalzinho)", "Cedro (Tartarugalzinho)", "Terra Firme (Tartarugalzinho)", "Bom Jesus (Tartarugalzinho)", "Vila Itaubal (Tartarugalzinho)", "Assentamento Entre Rios (Tartarugalzinho)", "Lago Novo (Tartarugalzinho)", "Vila Mangueira (Tartarugalzinho)", "Nazarezinho (Tartarugalzinho)", "Andiroba (Tartarugalzinho)", "Igarapé Grande (Tartarugalzinho)",
+            "Base de Aviação (Amapá)", "Sucuriju (Amapá)", "Piquiá (Amapá)", "Vila Mutum (Amapá)", "Calçoene Velho (Amapá)", "Assentamento Raimundo Osmar Ribeiro (Amapá)", "Vila do Cruzeiro (Amapá)", "Região dos Lagos (Amapá)", "Igarapé Grande (Amapá)",
+            "Lourenço (Calçoene)", "Cunani (Calçoene)", "Vila do Goiabal (Calçoene)", "Praia do Goiabal (Calçoene)", "Igarapé Asfalto (Calçoene)", "Assentamento Firmino (Amapá/Calçoene)", "Vila Carnot (Calçoene)", "Freguesia do Amapá (Calçoene)",
+            "Trinta Reis (Macapá)", "Luz de Fátima (Macapá)", "Vila Progresso (Bailique)", "Vila Macedônia (Bailique)", "Maruanum II (Macapá)", "Carapanatuba (Macapá)", "Mel da Pedreira (Macapá)", "Piaçaba Novo (Macapá)", "Abacate da Pedreira Novo (Macapá)",
+            "Igarapé do Costa (Santana)", "Anauerapucu de Cima (Santana)", "Vila Piaçacá (Santana)", "Ilha de Santana Nova (Santana)",
+            "Mazagão Novo (Mazagão)", "Carvão Novo (Mazagão)", "Vila de Mazagão Velho (Mazagão)", "Maracá (Mazagão)",
+            "Vila Velha (Oiapoque)", "Clevelândia do Norte (Oiapoque)", "Vila Manga (Oiapoque)", "Assentamento Vila Nova (Oiapoque)",
+            "Colônia do Matapi (Porto Grande)", "Cupixi (Porto Grande)", "Vila Nova Novo (Porto Grande)", "Assentamento Perimetral (Porto Grande)",
+            "Água Fria (Pedra Branca)", "Vila do Incra (Pedra Branca)", "Serra do Navio Velha (Serra do Navio)", "Colônia Água Branca (Serra do Navio)"
+        ] 
+    },
+    "PA": { 
+        n: "Pará", 
+        lat: -1.45, 
+        lon: -48.48, 
+        cities: [
+            // Cidades e distritos originais mantidos
+            "Abaetetuba","Abel Figueiredo","Acará","Afuá","Água Azul do Norte","Alenquer","Almeirim","Altamira","Anajás","Ananindeua","Anapu","Augusto Corrêa","Aurora do Pará","Aveiro","Bagre","Baião","Bannach","Barcarena","Belém","Belterra","Benevides","Bom Jesus do Tocantins","Bonito","Bragança","Brasil Novo","Brejo Grande do Araguaia","Breu Branco","Breves","Bujaru","Cachoeira do Arari","Cachoeira do Piriá","Cametá","Canaã dos Carajás","Capanema","Capitão Poço","Castanhal","Chaves","Colares","Conceição do Araguaia","Concórdia do Pará","Cumaru do Norte","Curionópolis","Curralinho","Curuá","Curuça","Dom Eliseu","Eldorado do Carajás","Faro","Floresta do Araguaia","Garrafão do Norte","Goianésia do Pará","Gurupá","Igarapé-Açu","Igarapé-Miri","Inhangapi","Ipixuna do Pará","Irituia","Itaituba","Itupiranga","Jacareacanga","Jacundá","Juruti","Limoeiro do Ajuru","Mãe do Rio","Magalhães Barata","Marabá","Maracanã","Marapanim","Marituba","Medicilândia","Melgaço","Mocajuba","Moju","Mojuí dos Campos","Monte Alegre","Muaná","Nova Esperança do Piriá","Novo Progresso","Novo Repartimento","Óbidos","Oriximiná","Ourilândia do Norte","Pacajá","Paragominas","Parauapebas","Pau D'Arco","Placas","Ponta de Pedras","Portel","Porto de Moz","Prainha","Primavera","Redenção","Rio Maria","Rondon do Pará","Rurópolis","Salinópolis","Salvaterra","Santa Bárbara do Pará","Santa Cruz do Arari","Santa Izabel do Pará","Santa Maria das Barreiras","Santa Maria do Pará","Santana do Araguaia","Santarém","Santarém Novo","Santo Antônio do Tauá","São Caetano de Odivelas","São Domingos do Araguaia","São Domingos do Capim","São Félix do Xingu","São Francisco do Pará","São Geraldo do Araguaia","São João da Ponta","São João de Pirabas","São João do Araguaia","São Miguel do Guamá","São Sebastião da Boa Vista","Sapucaia","Senador José Porfírio","Soure","Tailândia","Terra Alta","Terra Santa","Tomé-Açu","Tracuateua","Trairão","Tucumã","Tucuruí","Ulianópolis","Uruará","Vigia","Viseu","Vitória do Xingu","Xinguara","Alter do Chão","Algodoal","Almoço","Americano","Araras","Apeú","Assentamento Palmares","Boca do Acre","Cairari","Carajás","Castelo dos Sonhos","Colares","Curuai","Icoaraci","Igarapé-Açu","Ilha de Mosqueiro","Joana Peres","Miritituba","Monte Dourado","Murucupi","Outeiro","Paragominas Novo","Porto Trombetas","Quatro Bocas","Região do Salto","São Francisco do Mainardi","Taboleiro","Vila do Conde","Vila dos Cabanos","Vila do Trinta","Vila Mandi","Vila Permanente","Vila Socorro",
+            
+            // --- EXPANSÃO MÁXIMA DA REGIÃO METROPOLITANA DE BELÉM ---
+            // Distritos, Ilhas e Localidades de Belém
+            "Icoaraci (Belém)", "Mosqueiro (Belém)", "Outeiro (Belém)", "Cotijuba (Belém)", "Ilha do Combu (Belém)", "Bengui (Belém)", "Entroncamento (Belém)", "Val-de-Cans (Belém)", "Tenoné (Belém)", "Tapanã (Belém)", "Ilha de Paquetá (Belém)", "Ilha das Onças (Belém)", "Ilha do Jutuba (Belém)", "Baía do Sol (Mosqueiro)", "Vila de Mosqueiro (Belém)", "Fama (Outeiro)", "Brasília (Outeiro)", "Itaiteua (Outeiro)", "Quinta dos Prantos (Belém)",
+            
+            // Ananindeua
+            "Cidade Nova (Ananindeua)", "Coqueiro (Ananindeua)", "Guajará (Ananindeua)", "Distrito Industrial (Ananindeua)", "Águas Lindas (Ananindeua)", "Jaderlândia (Ananindeua)", "Curuçambá (Ananindeua)", "Aurá (Ananindeua)", "Igreja Perpétuo Socorro (Ananindeua)", "Vila Maguari (Ananindeua)", "Abacatal (Ananindeua)",
+            
+            // Marituba
+            "Almir Gabriel (Marituba)", "Decouville (Marituba)", "Nova Marituba (Marituba)", "Uriboca (Marituba)", "Che Guevara (Marituba)", "Bairro Novo (Marituba)", "São Francisco (Marituba)", "Vila União (Marituba)", "Campina de Marituba (Marituba)",
+            
+            // Benevides
+            "Murinin (Benevides)", "Benfica (Benevides)", "Distrito de Benfica (Benevides)", "Santa Maria (Benevides)", "Taiassuí (Benevides)", "Neópolis (Benevides)", "Assentamento Milton Santos (Benevides)", "Juaba (Benevides)", "Vila de Mosqueiro (Benevides - Limite)",
+            
+            // Santa Bárbara do Pará
+            "Genipaúba (Santa Bárbara)", "Pau D'Arco (Santa Bárbara)", "Colônia de Santana (Santa Bárbara)", "Cajueiro (Santa Bárbara)", "Apeú-Salvaterra (Santa Bárbara)", "Vila de Santa Bárbara (Santa Bárbara)", "Santo Amaro (Santa Bárbara)",
+            
+            // Castanhal e arredores metropolitanos próximos
+            "Apeú (Castanhal)", "Igreja do Apeú (Castanhal)", "Agrovila de Castanhal (Castanhal)", "Vila Marapanim (Castanhal)", "Macapazinho (Castanhal)", "Capanema Novo (Castanhal)", "Vila do Pará (Castanhal)", "Inhangapi Velho (Castanhal)"
+        ] 
+    }
 };
 
         let map, route, distKm = 0;
@@ -156,14 +200,13 @@
         }
 
         function calcularSimples(os, ds) {
-            // Cálculo de distância em linha reta (Haversine) caso falte internet
             const lat1 = DB[os].lat; const lon1 = DB[os].lon;
             const lat2 = DB[ds].lat; const lon2 = DB[ds].lon;
             const R = 6371;
             const dLat = (lat2-lat1)*Math.PI/180;
             const dLon = (lon2-lon1)*Math.PI/180;
             const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-            distKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))) * 1.2; // +20% para simular curvas
+            distKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))) * 1.2;
             plot([[lat1, lon1], [lat2, lon2]]);
         }
 
